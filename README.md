@@ -38,7 +38,13 @@ make check
 ```
 which will (re)build 2decomp&fft as necessary.
 
-**TODO** Convert examples to tests and automate running them
+By default this will run the tests/examples on a single rank, launched with ``mpirun``.
+The number of ranks can be controlled by setting the ``NP`` variable and the launcher is overridden by
+setting ``MPIRUN``, for example to run tests on 4 ranks using an ``mpiexec`` launcher installed at
+``${HOME}/bin/mpiexec`` the command would be
+```
+make NP=4 MPIRUN=${HOME}/bin/mpiexec check
+```
 
 ## GPU compilation
 
@@ -64,6 +70,25 @@ Profiling can be activated in the Makefile. Set the variable `PROFILER` to one o
 3. Profile FFT operations (default : true)
 4. Profile decomp_2d init / fin subroutines (default : true)
 
+## Miscellaneous
+
+### Print the log to a file or to stdout
+
+Before calling `decomp_2d_init`, the external code can modify the variable `decomp_log` to change the output for the log. The expected value is defined by the integer constants
+```
+integer, parameter, public :: D2D_LOG_QUIET = 0       ! No logging output
+integer, parameter, public :: D2D_LOG_STDOUT = 1      ! Root rank logs output to stdout
+integer, parameter, public :: D2D_LOG_TOFILE = 2      ! Root rank logs output to the file "decomp_2d_setup.log"
+integer, parameter, public :: D2D_LOG_TOFILE_FULL = 3 ! All ranks log output to a dedicated file
+```
+exported by the `decomp_2d` module.
+Although their values are shown here, users should not rely on these and are recommended to prefer to use the named variables `D2D_LOG_QUIET`, etc. instead.
+The default value used is `D2D_LOG_TOFILE` for the default build and `D2D_LOG_TOFILE_FULL` for a debug build.
+
+### Change the debug level for debug builds
+
+Before calling `decomp_2d_init`, the external code can modify the variable `decomp_debug` to change the debug level. The user can also modify this variable using the environment variable `DECOMP_2D_DEBUG`. Please note that the environment variable is processed only for debug builds. The expected value for the variable `decomp_debug` is some integer between 0 and 6, bounds included.
+
 ## Optional dependencies
 
 ### FFTW
@@ -82,14 +107,14 @@ make install
 
 ### Caliper
 
-The library [caliper](https://github.com/LLNL/Caliper) can be used to profile the execution of the code. The version 2.8.0 was tested and is supported. Please note that one must build caliper and decomp2d against the same C/C++/Fortran compilers and MPI libray. For build instructions, please check [here](https://github.com/LLNL/Caliper#building-and-installing) and [here](https://software.llnl.gov/Caliper/CaliperBasics.html#build-and-install). Below is a suggestion for the compilation of the library using the GNU compilers:
+The library [caliper](https://github.com/LLNL/Caliper) can be used to profile the execution of the code. The version 2.9.0 was tested and is supported, version 2.8.0 has also been tested and is still expected to work. Please note that one must build caliper and decomp2d against the same C/C++/Fortran compilers and MPI libray. For build instructions, please check [here](https://github.com/LLNL/Caliper#building-and-installing) and [here](https://software.llnl.gov/Caliper/CaliperBasics.html#build-and-install). Below is a suggestion for the compilation of the library using the GNU compilers:
 
 ```
 git clone https://github.com/LLNL/Caliper.git caliper_github
 cd caliper_github
-git checkout v2.8.0
+git checkout v2.9.0
 mkdir build && cd build
-cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=../../caliper_build_2.8.0 -DWITH_FORTRAN=yes -DWITH_MPI=yes -DBUILD_TESTING=yes ../
+cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=../../caliper_build_2.9.0 -DWITH_FORTRAN=yes -DWITH_MPI=yes -DBUILD_TESTING=yes ../
 make -j
 make test
 make install
