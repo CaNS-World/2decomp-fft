@@ -89,9 +89,9 @@ module decomp_2d
    integer, parameter, public :: D2D_LOG_TOFILE = 2
    integer, parameter, public :: D2D_LOG_TOFILE_FULL = 3
 #ifdef DEBUG
-   integer, public, save :: decomp_log = D2D_LOG_TOFILE_FULL
+   integer, public, save :: decomp_log = D2D_LOG_QUIET !D2D_LOG_TOFILE_FULL
 #else
-   integer, public, save :: decomp_log = D2D_LOG_TOFILE
+   integer, public, save :: decomp_log = D2D_LOG_QUIET !D2D_LOG_TOFILE
 #endif
 
    !
