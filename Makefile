@@ -5,6 +5,7 @@
 #   -DDOUBLE_PREC - use double-precision
 #   -DSAVE_SINGLE - Save 3D data in single-precision
 #   -DDEBG        - debugging
+#   -DOVERWIR     - Enable overwriting optimisation in MKL FFT
 # generate a Git version string
 GIT_VERSION := $(shell git describe --tag --long --always)
 
@@ -38,7 +39,7 @@ endif
 include $(CMPINC)
 
 ### List of files for the main code
-SRCDECOMP = factor.f90 decomp_2d.f90 log.f90 io.f90
+SRCDECOMP = decomp_2d_constants.f90 factor.f90 decomp_2d.f90 log.f90 io.f90
 
 #######FFT settings##########
 ifeq ($(FFT),fftw3)

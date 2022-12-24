@@ -14,6 +14,7 @@
 
 module decomp_2d_fft
 
+   use decomp_2d_constants
    use decomp_2d  ! 2D decomposition module
    use, intrinsic :: iso_c_binding
 
@@ -42,6 +43,8 @@ module decomp_2d_fft
    ! Physical space data can be stored in either X-pencil or Z-pencil
    integer, parameter, public :: PHYSICAL_IN_X = 1
    integer, parameter, public :: PHYSICAL_IN_Z = 3
+
+   integer, parameter, public :: D2D_FFT_BACKEND = D2D_FFT_BACKEND_FFTW3_F03
 
    integer, save :: format                 ! input X-pencil or Z-pencil
 
@@ -571,10 +574,16 @@ contains
 
       implicit none
 
-      if (nrank == 0) then
-         write (*, *) ' '
-         write (*, *) '***** Using the FFTW (F2003 interface) engine *****'
-         write (*, *) ' '
+      integer :: iounit
+
+      if ((decomp_log == D2D_LOG_STDOUT .and. nrank == 0) .or. &
+          (decomp_log == D2D_LOG_TOFILE .and. nrank == 0) .or. &
+          (decomp_log == D2D_LOG_TOFILE_FULL)) then
+         iounit = d2d_listing_get_unit()
+         write (iounit, *) ' '
+         write (iounit, *) '***** Using the FFTW (F2003 interface) engine *****'
+         write (iounit, *) ' '
+         call d2d_listing_close_unit(iounit)
       end if
 
       if (format == PHYSICAL_IN_X) then
