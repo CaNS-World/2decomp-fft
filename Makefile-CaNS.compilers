@@ -31,6 +31,10 @@ FC = mpifort
 ifeq ($(CMP),INTEL)
   FC = mpiifort
 
+  ifeq ($(INTEL_IFX),1)
+    FFLAGS += -fc=ifx
+  endif
+
   FFLAGS += -fpp -std08
   ifeq ($(DEBUG_BUILD),yes)
     DEFS += -DDEBUG
