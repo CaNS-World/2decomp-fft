@@ -29,7 +29,7 @@ ifeq ($(BUILD),dev)
 endif
 FC = mpifort
 ifeq ($(CMP),INTEL)
-  FC = mpiifort
+  FC = mpiifx
 
   FFLAGS += -fpp -std08
   ifeq ($(DEBUG_BUILD),yes)
@@ -45,8 +45,8 @@ ifeq ($(CMP),INTEL)
   endif
 
   MODFLAG = -module # Explicit space
-else ifeq ($(CMP),INTEL_IFX)
-  FC = mpiifx
+else ifeq ($(CMP),INTEL_IFORT)
+  FC = mpiifort
 
   FFLAGS += -fpp -std08
   ifeq ($(DEBUG_BUILD),yes)
