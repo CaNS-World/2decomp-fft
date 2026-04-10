@@ -996,6 +996,8 @@ contains
       size1 = data1 / proc
       nu = data1 - size1 * proc
       nl = proc - nu
+#define NEW_DISTRIBUTION
+#if !defined(NEW_DISTRIBUTION)
       st(0) = 1
       sz(0) = size1
       en(0) = size1
@@ -1012,6 +1014,21 @@ contains
       end do
       en(proc - 1) = data1
       sz(proc - 1) = data1 - st(proc - 1) + 1
+#else
+      sz(:) = data1 / proc
+      do i = 1, mod(data1, proc)
+         sz(i - 1) = sz(i - 1) + 1
+      end do
+      do i = 1, proc
+         st(i - 1) = 1 + (i - 1) * sz(i - 1)
+         en(i - 1) = i * sz(i - 1)
+      end do
+      do i = mod(data1, proc) + 1, proc
+         st(i - 1) = st(i - 1) + mod(data1, proc)
+         en(i - 1) = en(i - 1) + mod(data1, proc)
+      end do
+#endif
+#undef NEW_DISTRIBUTION
 
       return
    end subroutine distribute
